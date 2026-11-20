@@ -1613,7 +1613,7 @@ async function handleRoll(v, card = null, v2 = 1 + Math.floor(Math.random() * 6)
     nextTurn();
   } else if (v === 6 || card === 'bike') {
     if (v !== 6) pl.sixes = 0;
-    showToast(card === 'bike' && v !== 6 ? `🚲 ${pl.name} ได้ทอยอีกครั้ง!` : `🎉 ${pl.name} ทอยได้เลข 6! ได้สิทธิ์ทอยเพิ่มอีกครั้ง!`, '🎲', 'หมุนเต๋าต่อได้ทันที');
+    showToast(card === 'bike' && v !== 6 ? `🚲 ${pl.name} ได้ทอยอีกครั้ง!` : `🎉 ${pl.name} ทอยได้เลข 6! ได้สิทธิ์ทอยเพิ่มอีกครั้ง!`, '🎲', v === 6 && pl.sixes === 2 ? '⚠️ ระวัง! ได้ 6 อีกครั้งจะถูกข้ามตาถัดไป' : 'หมุนเต๋าต่อได้ทันที');
   } else {
     nextTurn();
   }
@@ -2511,6 +2511,7 @@ function restoreGame(state, mode) {
     'จุดสตาร์ท': 'Start',
     ' ทอยได้เลข 6! ได้สิทธิ์ทอยเพิ่มอีกครั้ง!': ' rolled a 6! Roll again!',
     'หมุนเต๋าต่อได้ทันที': 'Roll again right away',
+    '⚠️ ระวัง! ได้ 6 อีกครั้งจะถูกข้ามตาถัดไป': '⚠️ Careful! Another 6 skips your next turn',
     ' ทอยได้ ': ' rolled ',
     ' ก้าว': ' steps',
     'กำลังเดินผ่านเส้นทางสวนป่าเบญจกิตติ...': 'Walking the Benjakitti forest trail...',
