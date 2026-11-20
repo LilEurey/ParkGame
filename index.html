@@ -669,6 +669,10 @@
 <!-- ======================================================== -->
 <!-- MODAL: แผนที่จริง & ข้อมูลสถานที่สวนเบญจกิตติ (Park Guide) -->
 <!-- ======================================================== -->
+<!-- Turn banner: shown briefly whenever a new roll starts -->
+<div id="turnBanner" class="hidden fixed top-20 inset-x-0 z-50 flex justify-center px-4 pointer-events-none" role="status">
+  <div class="game-card animate-in rounded-3xl shadow-xl border-4 bg-white px-6 py-3 font-game text-xl font-extrabold text-emerald-950"></div>
+</div>
 <!-- Card received popup: auto-hides, click to dismiss -->
 <div id="cardPopup" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30" onclick="this.classList.add('hidden')" role="alert">
   <div class="game-card animate-in rounded-3xl shadow-xl border-2 border-amber-300 bg-white px-6 py-5 max-w-xs w-full text-center">
@@ -1220,7 +1224,7 @@ function clearOnline() { try { localStorage.removeItem(ONLINE_KEY); } catch(e) {
 const esc = s => String(s).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`); // names come from other players
 
 // Online AFK auto-roll: everyone shows the countdown, only the host rolls (one authority = no double rolls)
-const AFK_SECONDS = 10;
+const AFK_SECONDS = 15;
 let rollSeq = 0, turnKey = -1, turnStart = Date.now();
 let rollPending = false; // guest asked host to roll, waiting for the ROLL broadcast
 setInterval(() => {
@@ -1274,6 +1278,16 @@ function showToast(text, icon = '🚶', sub = '') {
   document.getElementById('eventSub').textContent = sub;
 }
 
+function showTurnBanner() {
+  const el = document.getElementById('turnBanner'), box = el.firstElementChild, cur = gameState.players[gameState.turn], mine = isMyTurn();
+  box.textContent = mine ? '🎲 ตาของคุณแล้ว!' : `${cur.avatar} ตาของ ${cur.name}`;
+  box.style.borderColor = COLORS[gameState.turn % COLORS.length];
+  el.classList.remove('hidden'); box.classList.remove('animate-in'); void box.offsetWidth; box.classList.add('animate-in');
+  if (mine) sfx.playPop();
+  clearTimeout(showTurnBanner.t);
+  showTurnBanner.t = setTimeout(() => el.classList.add('hidden'), 1300);
+}
+
 function showCardPopup(pl, c) {
   const el = document.getElementById('cardPopup'), k = CARDS[c];
   document.getElementById('cardPopupWho').textContent = `🎁 ${pl.name} ได้รับการ์ด!`;
@@ -1283,7 +1297,7 @@ function showCardPopup(pl, c) {
   el.classList.remove('hidden');
   const box = el.firstElementChild; box.classList.remove('animate-in'); void box.offsetWidth; box.classList.add('animate-in'); // replay animation
   clearTimeout(showCardPopup.t);
-  showCardPopup.t = setTimeout(() => el.classList.add('hidden'), 2200);
+  showCardPopup.t = setTimeout(() => el.classList.add('hidden'), 3500);
 }
 
 function checkPassportStamps(pos) {
@@ -1366,7 +1380,7 @@ function updateHUD() {
   }).join('');
 
   // New roll opportunity (turn passed or rolled a 6): restart the AFK countdown
-  if (!isBusy && turnKey !== rollSeq) { turnKey = rollSeq; turnStart = Date.now(); }
+  if (!isBusy && turnKey !== rollSeq) { turnKey = rollSeq; turnStart = Date.now(); if (live) showTurnBanner(); }
 
   // Bot Turn Auto-Roll
   if (live && cur.bot && !isBusy && !botTimer) {
@@ -1376,7 +1390,7 @@ function updateHUD() {
         const [c, t] = botCard(gameState.players[gameState.turn]);
         handleRoll(1 + Math.floor(Math.random() * 6), c, undefined, t);
       }
-    }, 900);
+    }, 1600);
   }
 }
 
@@ -1583,7 +1597,7 @@ async function handleRoll(v, card = null, v2 = 1 + Math.floor(Math.random() * 6)
     await sleep(400);
     showToast(`🎁 ${pl.name} ได้การ์ด ${CARDS[c].icon} ${CARDS[c].name}!`, CARDS[c].icon, CARDS[c].desc);
     showCardPopup(pl, c);
-    await sleep(1800);
+    await sleep(2600);
   }
 
   // 4. Check for Winner
