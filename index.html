@@ -1010,7 +1010,7 @@ const CARDS = {
   skywalk:    { kind: 'move',   icon: '🌉', name: 'ทางลัดสกายวอล์ค', desc: 'เดินเพิ่ม 2 ช่องในตานี้' },
   bike:       { kind: 'move',   icon: '🚲', name: 'ปั่นจักรยานรอบสวน', desc: 'เดินเสร็จแล้วได้ทอยอีก 1 ครั้ง' },
   trap:       { kind: 'move',   icon: '🪤', name: 'กับดัก', desc: 'วางกับดักบนช่องที่คุณออกเดิน คนอื่นมาตกถอยหลัง 4 ช่อง' },
-  swap:       { kind: 'attack', icon: '🔄', name: 'สลับร่าง', desc: 'แทนการทอย: สลับที่กับผู้เล่นที่ห่างไม่เกิน 15 ช่อง (ใช้ไม่ได้ช่อง 85 ขึ้นไป)' },
+  swap:       { kind: 'attack', icon: '🔄', name: 'สลับร่าง', desc: 'แทนการทอย: สลับที่กับผู้เล่นคนใดก็ได้ (เป้าหมายต้องต่ำกว่าช่อง 90, ใช้ไม่ได้ช่อง 85 ขึ้นไป)' },
   snake_call: { kind: 'attack', icon: '🐍', name: 'งูเรียกเพื่อน', desc: 'แทนการทอย: ส่งผู้เล่น 1 คนไปหัวงูที่อยู่ข้างหลังไม่เกิน 10 ช่อง แล้วไถลลง' },
   gust:       { kind: 'attack', icon: '💨', name: 'ลมพัดถอยหลัง', desc: 'แทนการทอย: ผู้เล่น 1 คนถอยหลัง 5 ช่อง' },
   shield:     { kind: 'guard',  icon: '🛡️', name: 'ร่มเงาต้นไม้', desc: 'ใช้อัตโนมัติ: กันงู การชน กับดัก หรือการโจมตีได้ 1 ครั้ง' },
@@ -1026,7 +1026,7 @@ function targetsFor(pl, c) {
   return gameState.players.map((o, i) => i).filter(i => {
     const o = gameState.players[i];
     if (o === pl || o.pos <= 0 || o.pos >= 100) return false;
-    if (c === 'swap') return pl.pos < 85 && o.pos < 90 && o.pos !== pl.pos && Math.abs(o.pos - pl.pos) <= 15;
+    if (c === 'swap') return pl.pos < 85 && o.pos < 90 && o.pos !== pl.pos;
     if (c === 'snake_call') return snakeBehind(o) != null;
     return c === 'gust';
   });
@@ -2602,7 +2602,7 @@ function restoreGame(state, mode) {
     'กับดัก': 'Trap',
     'วางกับดักบนช่องที่คุณออกเดิน คนอื่นมาตกถอยหลัง 4 ช่อง': 'Leave a trap on the tile you move from. A rival who lands there goes back 4',
     'สลับร่าง': 'Swap',
-    'แทนการทอย: สลับที่กับผู้เล่นที่ห่างไม่เกิน 15 ช่อง (ใช้ไม่ได้ช่อง 85 ขึ้นไป)': 'Instead of rolling: trade places with a player within 15 tiles (not from tile 85 up)',
+    'แทนการทอย: สลับที่กับผู้เล่นคนใดก็ได้ (เป้าหมายต้องต่ำกว่าช่อง 90, ใช้ไม่ได้ช่อง 85 ขึ้นไป)': 'Instead of rolling: trade places with any player below tile 90 (not from tile 85 up)',
     'งูเรียกเพื่อน': 'Snake Call',
     'แทนการทอย: ส่งผู้เล่น 1 คนไปหัวงูที่อยู่ข้างหลังไม่เกิน 10 ช่อง แล้วไถลลง': 'Instead of rolling: send a player to a snake head up to 10 tiles behind them, and down they slide',
     'ลมพัดถอยหลัง': 'Lake Gust',
